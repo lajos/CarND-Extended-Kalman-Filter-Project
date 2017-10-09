@@ -4,6 +4,7 @@
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
 using std::vector;
+using namespace std;
 
 Tools::Tools() {}
 
@@ -12,8 +13,8 @@ Tools::~Tools() {}
 VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
                               const vector<VectorXd> &ground_truth) {
 	VectorXd rmse(4);
-	rmse << 1, 1, 1, 1;
-	return rmse;
+	rmse << 0, 0, 0, 0;
+	
 	if (estimations.size() != ground_truth.size() || estimations.size() == 0) {
 		cout << "ERROR: invalid data to calculate RMSE" << endl;
 		return rmse;
@@ -24,7 +25,7 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
 		rmse += (estimations[i] - ground_truth[i]).array().pow(2).matrix();
 	}
 
-	rmse = rmse.array() / estimations.size();
+	rmse /= estimations.size();
 	rmse = rmse.array().sqrt();
 	return rmse;
 }
@@ -80,4 +81,12 @@ VectorXd Tools::CartesianToPolar(const double& px, const double& py, const doubl
 	VectorXd polar(3);
 	polar << rho, phi, rho_dot;
 	return polar;
+}
+
+double Tools::ConstrainRadian(double x) {
+	if (x > M_PI)
+		return fmod(x - M_PI, 2 * M_PI) - M_PI;
+	else if (x < -M_PI)
+		return fmod(x + M_PI, 2 * M_PI) + M_PI;
+	return x;
 }

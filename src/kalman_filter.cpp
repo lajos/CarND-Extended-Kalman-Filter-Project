@@ -1,8 +1,10 @@
 #include "kalman_filter.h"
 #include "tools.h"
+#include <iostream>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
+using namespace std;
 
 KalmanFilter::KalmanFilter() {}
 
@@ -26,17 +28,18 @@ void KalmanFilter::Predict() {
 
 void KalmanFilter::Update(const VectorXd &z) {
 	VectorXd z_pred = H_ * x_;
-	y_ = z - z_pred;
-	UpdateState();
+	VectorXd y = z - z_pred;
+	UpdateState(y);
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
-	VectorXd xp = Tools::CartesianToPolar(x_(0), x_(1), x_(2), x_(3));//
-	y_ = z - xp;
-	UpdateState();
+	VectorXd xp = Tools::CartesianToPolar(x_(0), x_(1), x_(2), x_(3));
+	VectorXd y = z - xp;
+	y[1] = Tools::ConstrainRadian(y[1]);   // constrain yaw angle
+	UpdateState(y);
 }
 
-void KalmanFilter::UpdateState() {
+void KalmanFilter::UpdateState(const VectorXd &y) {
 	MatrixXd Ht = H_.transpose();
 	MatrixXd S = H_ * P_ * Ht + R_;
 	MatrixXd Si = S.inverse();
@@ -44,6 +47,6 @@ void KalmanFilter::UpdateState() {
 	MatrixXd K = PHt * Si;
 
 	//new estimate
-	x_ = x_ + (K * y_);
+	x_ = x_ + (K * y);
 	P_ = (I_ - K * H_) * P_;
 }

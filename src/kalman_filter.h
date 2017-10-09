@@ -23,8 +23,6 @@ public:
   // measurement covariance matrix
   Eigen::MatrixXd R_;
 
-  Eigen::VectorXd y_;
-
   // identity matrix
   Eigen::MatrixXd I_;
 
@@ -70,7 +68,7 @@ public:
   void UpdateEKF(const Eigen::VectorXd &z);
 
 private:
-	void UpdateState();
+	void UpdateState(const Eigen::VectorXd &y);
 
 };
 

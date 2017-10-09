@@ -40,6 +40,11 @@ public:
   */
   static VectorXd CartesianToPolar(const double& px, const double& py, const double& vx, const double& vy);
 
+  /**
+  * Constrain radian angle between -M_PI and M_PI
+  */
+  static double ConstrainRadian(double x);
+
 };
 
 #endif /* TOOLS_H_ */
